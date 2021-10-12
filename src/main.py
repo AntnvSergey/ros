@@ -22,15 +22,15 @@ class PoseEstimation:
     def update_target(cls, new_pose):
         cls.target_pose = new_pose
 
-    def distance(cls):
-        delta_pose = cls.target_pose.x - cls.current_pose.x, cls.target_pose.y - cls.current_pose.y
-        return (delta_pose[0]**2 + delta_pose[1]**2)**0.5
+    def find_distance(cls):
+        delta = cls.target_pose.x - cls.current_pose.x, cls.target_pose.y - cls.current_pose.y
+        return (delta[0]**2 + delta[1]**2)**0.5
 
-    def angle(cls):
+    def find_angle(cls):
         return (atan2(cls.target_pose.y - cls.current_pose.y, cls.target_pose.x - cls.current_pose.x) - cls.current_pose.theta + pi) % (2*pi) - pi
 
     def __str__(cls):
-        return "current_pose x, y: {} {}, target_pose x, y: {} {}, distance: {}, angle: {}".format(cls.current_pose.x, cls.current_pose.y, cls.target_pose.x, cls.target_pose.y, cls.distance(), cls.angle())
+        return "current_pose x, y: {} {}, target_pose x, y: {} {}, distance: {}, angle: {}".format(cls.current_pose.x, cls.current_pose.y, cls.target_pose.x, cls.target_pose.y, cls.find_distance(), cls.find_angle())
 
 
 if __name__ == "__main__":
@@ -49,10 +49,10 @@ if __name__ == "__main__":
         '/turtle1/pose', Pose, pos.update_target)
 
     while not rospy.is_shutdown():
-        dist = pos.distance()
+        dist = pos.find_distance()
         rospy.loginfo(str(pos))
         if dist >= min_distance:
-            angle = pos.angle()
+            angle = pos.find_angle()
             tw = msg(dist, angle)
             pub.publish(tw)
         rate.sleep()

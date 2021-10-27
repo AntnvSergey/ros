@@ -73,7 +73,8 @@ if __name__ == "__main__":
 
             pos = np.array([0, 0, 0])
             meta_data.origin = Pose()
-            meta_data.origin.position.x, meta_data.origin.position.y = pos[:2]
+            meta_data.origin.position.x = pos[0]
+            meta_data.origin.position.y = pos[1]
             map_msg.info = meta_data
 
             rospy.loginfo('publish created grid')

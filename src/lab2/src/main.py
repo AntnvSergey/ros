@@ -56,17 +56,13 @@ if __name__ == "__main__":
     rate = rospy.Rate(1)
     Grid = Occupancy_grid()
 
-    pub = rospy.Publisher('/occupancy_grid', OccupancyGrid, queue_size=1)
-    sub_scan = rospy.Subscriber(
-        '/base_scan', LaserScan, Grid.create_grid)
+    publisher = rospy.Publisher('/occupancy_grid', OccupancyGrid, queue_size=1)
+    subscriber = rospy.Subscriber('/base_scan', LaserScan, Grid.create_grid)
 
-    min_distance = 1
     while not rospy.is_shutdown():
         if Grid.grid:
             meta_data = MapMetaData()
             meta_data.resolution = 1 / Grid.scale
-            # meta_data.width = Grid.data_shape[1]
-            # meta_data.height = Grid.data_shape[0]
 
             meta_data.width = Grid.grid_size
             meta_data.height = Grid.grid_size
@@ -75,13 +71,11 @@ if __name__ == "__main__":
             map_msg.data = Grid.grid
             map_msg.header.frame_id = '/base_laser_link'
 
-            # pos = np.array([-meta_data.width * meta_data.resolution / 2, -
-            #                meta_data.height * meta_data.resolution / 2, 0])
             pos = np.array([0, 0, 0])
             meta_data.origin = Pose()
             meta_data.origin.position.x, meta_data.origin.position.y = pos[:2]
             map_msg.info = meta_data
 
             rospy.loginfo('publish created grid')
-            pub.publish(map_msg)
+            publisher.publish(map_msg)
         rate.sleep()
